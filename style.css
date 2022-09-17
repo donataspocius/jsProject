@@ -1,3 +1,57 @@
-* {
+#main-container {
+  max-width: 1500px;
+  margin: 0px auto;
   background-color: bisque;
+  box-sizing: border-box;
+}
+
+#app-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 15px 5px 0 5px;
+}
+
+#my-data-container {
+  margin-right: 5px;
+}
+
+#my-data-info-card {
+  border: 5px solid rgb(219, 69, 24);
+  min-height: 50px;
+}
+
+#lists-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 15px;
+}
+
+#visited-list-container {
+  border: 5px solid blue;
+  margin-right: 2px;
+}
+
+#wish-list-container {
+  border: 5px solid green;
+  margin-left: 2px;
+}
+
+#api-search-bar {
+  border: 5px solid violet;
+  padding: 15px 5px;
+}
+#search-input {
+  width: 65%;
+}
+
+#api-cards-container {
+  border: 5px solid orange;
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 50%);
+}
+
+.city-card {
+  border: 5px solid black;
+  margin: 5px;
 }
