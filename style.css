@@ -6,6 +6,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin: 15px 5px 0 5px;
+  position: relative;
 }
 
 #my-data-container {
@@ -51,4 +52,16 @@
 .city-card {
   border: 5px solid black;
   margin: 5px;
+}
+
+.full-info-card {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border: 5px solid orange;
+  background-color: lightgoldenrodyellow;
+  top: 10vh;
+  left: 40vh;
+  z-index: 9;
+  filter: none;
 }
