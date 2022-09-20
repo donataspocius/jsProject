@@ -443,6 +443,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
 function renderApp(apiData) {
   let appContainerEl;
+  let visitedBtn, plannedVisitBtn;
   renderUI(apiData);
 
   // RENDER CITY CARDS (API SEARCH LIST)
@@ -1161,14 +1162,14 @@ function renderLargeCard(apiData, index) {
   fullInfoCardElAirbnbUrl.append(airbnbUrl);
 
   // rendering buttons
-  let visitedBtn = document.createElement("button");
+  visitedBtn = document.createElement("button");
   fullInfoCardEl.append(visitedBtn);
   visitedBtn.id = "visitedBtn";
   visitedBtn.type = "button";
   visitedBtn.textContent = "Add to VISITED places";
   visitedBtn.isInEdit = false;
 
-  let plannedVisitBtn = document.createElement("button");
+  plannedVisitBtn = document.createElement("button");
   fullInfoCardEl.append(plannedVisitBtn);
   plannedVisitBtn.id = "plannedVisitBtn";
   plannedVisitBtn.type = "button";
