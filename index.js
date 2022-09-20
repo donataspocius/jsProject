@@ -3,10 +3,34 @@ const pass = "6c3000ee9b691b3532f0151922527e07";
 
 let customerData = [];
 let fakeCityData;
+// const searchInput = "united-states";
+
+async function loadApiSearchData(searchInput) {
+  try {
+    // let searchInput = document.querySelector("#search-input").value;
+    let newSecret = btoa(`${username}:${pass}`);
+    let response = await fetch(
+      `https://api.roadgoat.com/api/v2/destinations/${searchInput}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Basic " + newSecret,
+        },
+      }
+    );
+    let apiData = await response.json();
+    // .then((content) => content);
+    renderApp(apiData);
+    // renderUI();
+  } catch (err) {
+    console.log("fetch error: ", err);
+  }
+}
 
 document.addEventListener("DOMContentLoaded", function (e) {
   e.preventDefault();
-  loadApiData();
+  loadApiSearchData("united-states");
+  // loadUserUI();
 });
 
 function renderApp(apiData) {
@@ -26,7 +50,9 @@ function renderApp(apiData) {
 
 function moveToListBtns() {
   document.querySelector("#visitedBtn").addEventListener("click", (e) => {
+    console.log(visitedBtn.isInEdit);
     visitedBtn.isInEdit = !visitedBtn.isInEdit;
+    console.log(visitedBtn.isInEdit);
     renderApp();
   });
 
@@ -187,27 +213,6 @@ function renderUI(apiData) {
   });
 }
 
-async function loadApiData() {
-  try {
-    // let searchInput = document.querySelector("#search-input").value;
-    const searchInput = "united-states";
-    let newSecret = btoa(`${username}:${pass}`);
-    let response = await fetch(
-      `https://api.roadgoat.com/api/v2/destinations/${searchInput}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Basic " + newSecret,
-        },
-      }
-    );
-    let apiData = await response.json();
-    // .then((content) => content);
-    renderApp(apiData);
-  } catch (err) {
-    console.log("fetch error: ", err);
-  }
-}
 // CODE ENDS HERE
 // API DATA OBJECT.
 
