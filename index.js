@@ -22,19 +22,12 @@ function renderApp() {
   //     moveToListBtns();
   //   })
   // );
-  // cardClick();
 }
 
 function searchBtn() {
   document.querySelector("#search-btn").addEventListener("click", (e) => {
     let searchCriteria = document.querySelector("#search-input").value;
     loadApiSearchData(searchCriteria);
-  });
-}
-
-function cardClick() {
-  document.querySelector("#6588544").addEventListener("click", (e) => {
-    console.log("asdassadasd");
   });
 }
 
@@ -243,13 +236,9 @@ function renderUI() {
   appContainerEl.append(myDataContainerEl);
   myDataContainerEl.id = "my-data-container";
 
-  // render renderUserInfoCard()  here
   renderUserInfoCard();
-  // render renderUserLists() here
   renderUserLists();
-  // render search bar here
   renderSearchBar();
-  // renderSearchResults(apiData);
 }
 
 // CODE ENDS HERE
