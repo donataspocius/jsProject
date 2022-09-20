@@ -3,14 +3,49 @@ const pass = "6c3000ee9b691b3532f0151922527e07";
 
 let customerData = [];
 let fakeCityData;
-// const searchInput = "united-states";
+
+document.addEventListener("DOMContentLoaded", function (e) {
+  e.preventDefault();
+  renderApp();
+});
+
+function renderApp() {
+  renderUI();
+  loadApiSearchData("united-states");
+  searchBtn();
+
+  // document.querySelectorAll(".city-card").forEach((el, index) =>
+  //   el.addEventListener("click", function (e) {
+  //     console.log("hello");
+  //     e.preventDefault();
+  //     renderLargeCard(apiData, index);
+  //     moveToListBtns();
+  //   })
+  // );
+  // cardClick();
+}
+
+function searchBtn() {
+  document.querySelector("#search-btn").addEventListener("click", (e) => {
+    let searchCriteria = document.querySelector("#search-input").value;
+    loadApiSearchData(searchCriteria);
+  });
+}
+
+function cardClick() {
+  document.querySelector("#6588544").addEventListener("click", (e) => {
+    console.log("asdassadasd");
+  });
+}
 
 async function loadApiSearchData(searchInput) {
   try {
-    // let searchInput = document.querySelector("#search-input").value;
+    if (!searchInput) return;
+    // formating search input by replacing spaces with dashes (api docs)
+    let formatedInput = searchInput.split(" ").join("-").toLowerCase();
     let newSecret = btoa(`${username}:${pass}`);
     let response = await fetch(
-      `https://api.roadgoat.com/api/v2/destinations/${searchInput}`,
+      `https://api.roadgoat.com/api/v2/destinations/${formatedInput}`,
       {
         method: "GET",
         headers: {
@@ -19,33 +54,12 @@ async function loadApiSearchData(searchInput) {
       }
     );
     let apiData = await response.json();
-    // .then((content) => content);
-    renderApp(apiData);
-    // renderUI();
+    renderSearchResults(apiData);
+    console.log(apiData);
   } catch (err) {
+    renderSearchResults();
     console.log("fetch error: ", err);
   }
-}
-
-document.addEventListener("DOMContentLoaded", function (e) {
-  e.preventDefault();
-  loadApiSearchData("united-states");
-  // loadUserUI();
-});
-
-function renderApp(apiData) {
-  let appContainerEl;
-  let visitedBtn, plannedVisitBtn;
-  renderUI(apiData);
-
-  // RENDER CITY CARDS (API SEARCH LIST)
-  document.querySelectorAll(".city-card").forEach((el, index) =>
-    el.addEventListener("click", function (e) {
-      e.preventDefault();
-      renderLargeCard(apiData, index);
-      moveToListBtns();
-    })
-  );
 }
 
 function moveToListBtns() {
@@ -138,43 +152,10 @@ function renderLargeCard(apiData, index) {
   visitedBtn.isinEdit = false;
 }
 
-function renderUI(apiData) {
-  appContainerEl = document.createElement("div");
-  document.body.append(appContainerEl);
-  appContainerEl.setAttribute("id", "app-container");
-
-  let myDataContainerEl = document.createElement("div");
-  appContainerEl.append(myDataContainerEl);
-  myDataContainerEl.id = "my-data-container";
-
-  let myDataInfoCardEl = document.createElement("div");
-  myDataContainerEl.append(myDataInfoCardEl);
-  myDataInfoCardEl.id = "my-data-info-card";
-
-  let listsContainerEl = document.createElement("div");
-  myDataContainerEl.append(listsContainerEl);
-  listsContainerEl.id = "lists-container";
-
-  let visitedListContainerEl = document.createElement("div");
-  listsContainerEl.append(visitedListContainerEl);
-  visitedListContainerEl.id = "visited-list-container";
-
-  let visitedListH1 = document.createElement("h1");
-  visitedListContainerEl.append(visitedListH1);
-  visitedListH1.textContent = "Visited Cities";
-
-  let wishListContainerEl = document.createElement("div");
-  listsContainerEl.append(wishListContainerEl);
-  wishListContainerEl.id = "wish-list-container";
-
-  let wishListH1 = document.createElement("h1");
-  wishListContainerEl.append(wishListH1);
-  wishListH1.textContent = "Planned Visits";
-
-  // RENDERING API SEARCH DATA
+function renderSearchBar() {
   // search bar
   let apiDataContainerEl = document.createElement("div");
-  appContainerEl.append(apiDataContainerEl);
+  document.querySelector("#app-container").append(apiDataContainerEl);
   apiDataContainerEl.id = "api-data-container";
 
   let apiSearchBarEl = document.createElement("div");
@@ -197,20 +178,78 @@ function renderUI(apiData) {
   searchBtnEl.type = "submit";
   searchBtnEl.id = "search-btn";
   searchBtnEl.textContent = "Search!";
+}
 
-  // api-cards-container
+function renderUserInfoCard() {
+  let myDataInfoCardEl = document.createElement("div");
+  document.querySelector("#my-data-container").append(myDataInfoCardEl);
+  myDataInfoCardEl.id = "my-data-info-card";
+}
+
+function renderUserLists() {
+  let listsContainerEl = document.createElement("div");
+  document.querySelector("#my-data-container").append(listsContainerEl);
+  listsContainerEl.id = "lists-container";
+
+  let visitedListContainerEl = document.createElement("div");
+  listsContainerEl.append(visitedListContainerEl);
+  visitedListContainerEl.id = "visited-list-container";
+
+  let visitedListH1 = document.createElement("h1");
+  visitedListContainerEl.append(visitedListH1);
+  visitedListH1.textContent = "Visited Cities";
+
+  let wishListContainerEl = document.createElement("div");
+  listsContainerEl.append(wishListContainerEl);
+  wishListContainerEl.id = "wish-list-container";
+
+  let wishListH1 = document.createElement("h1");
+  wishListContainerEl.append(wishListH1);
+  wishListH1.textContent = "Planned Visits";
+}
+
+function renderSearchResults(apiData) {
+  if (document.querySelector("#api-cards-container")) {
+    document.querySelector("#api-cards-container").remove();
+  }
+
   let apiCardsContainerEl = document.createElement("div");
-  apiDataContainerEl.append(apiCardsContainerEl);
+  document.querySelector("#api-data-container").append(apiCardsContainerEl);
   apiCardsContainerEl.id = "api-cards-container";
 
-  // RENDER API SEARCH RESULT CARD
-  let citiesDataFromApi = apiData["data"]["attributes"]["top_cities_and_towns"];
-  citiesDataFromApi.forEach((el) => {
-    let cardEl = document.createElement("div");
-    apiCardsContainerEl.append(cardEl);
-    cardEl.className = "city-card";
-    cardEl.textContent = el.name;
-  });
+  if (!apiData) {
+    let pError = document.createElement("div");
+    document.querySelector("#api-cards-container").append(pError);
+    pError.textContent = "NO RESULTS FOUND";
+  } else {
+    let citiesDataFromApi =
+      apiData["data"]["attributes"]["top_cities_and_towns"];
+    citiesDataFromApi.forEach((el) => {
+      let cardEl = document.createElement("div");
+      apiCardsContainerEl.append(cardEl);
+      cardEl.className = "city-card";
+      cardEl.id = el.id;
+      cardEl.textContent = el.name;
+    });
+  }
+}
+
+function renderUI() {
+  appContainerEl = document.createElement("div");
+  document.body.append(appContainerEl);
+  appContainerEl.setAttribute("id", "app-container");
+
+  let myDataContainerEl = document.createElement("div");
+  appContainerEl.append(myDataContainerEl);
+  myDataContainerEl.id = "my-data-container";
+
+  // render renderUserInfoCard()  here
+  renderUserInfoCard();
+  // render renderUserLists() here
+  renderUserLists();
+  // render search bar here
+  renderSearchBar();
+  // renderSearchResults(apiData);
 }
 
 // CODE ENDS HERE
