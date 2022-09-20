@@ -208,6 +208,8 @@ async function loadApiData() {
     console.log("fetch error: ", err);
   }
 }
+// CODE ENDS HERE
+// API DATA OBJECT.
 
 fakeCityData = {
   data: {
