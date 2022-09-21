@@ -69,3 +69,9 @@
   z-index: 9;
   filter: none;
 }
+
+#closeBtn {
+  height: 30px;
+  position: relative;
+  cursor: pointer;
+}
