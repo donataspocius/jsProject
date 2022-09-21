@@ -132,15 +132,15 @@ function renderLargeCard(apiData) {
   visitedBtn.type = "button";
   visitedBtn.isInEdit = true;
   visitedBtn.textContent = !visitedBtn.isInEdit
-    ? "Add to VISITED places"
-    : "SAVE";
+    ? "SAVE"
+    : "Add to VISITED places";
   console.log("visited btn", visitedBtn.isInEdit);
 
   visitedBtn.addEventListener("click", (e) => {
     e.preventDefault();
     visitedBtn.isInEdit = !visitedBtn.isInEdit;
     console.log(visitedBtn.isInEdit);
-    // renderLargeCard(apiData);
+    renderLargeCard(apiData);
     visitedBtnClick();
   });
 
