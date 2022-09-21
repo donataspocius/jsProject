@@ -217,14 +217,24 @@ function renderSearchResults(apiData) {
   } else {
     let citiesDataFromApi =
       apiData["data"]["attributes"]["top_cities_and_towns"];
-    citiesDataFromApi.forEach((el) => {
-      let cardEl = document.createElement("div");
-      apiCardsContainerEl.append(cardEl);
-      cardEl.className = "city-card";
-      cardEl.id = el.id;
-      cardEl.textContent = el.name;
-    });
+    renderCards(citiesDataFromApi);
   }
+}
+
+function renderCards(apiCityData) {
+  apiCityData.forEach((el) => {
+    let cardEl = document.createElement("div");
+    document.querySelector("#api-cards-container").append(cardEl);
+    cardEl.className = "city-card";
+    cardEl.id = el.id;
+    cardEl.textContent = el.name;
+    cardEl.addEventListener("click", (e) => {
+      console.log(cardEl.id);
+      e.preventDefault();
+      renderLargeCard(apiCityData);
+      moveToListBtns();
+    });
+  });
 }
 
 function renderUI() {
