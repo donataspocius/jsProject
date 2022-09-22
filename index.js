@@ -1,5 +1,5 @@
-const username = "c827e94ec41d32012308222cffa9b24d";
-const pass = "6c3000ee9b691b3532f0151922527e07";
+const username = "d306aad952470a383d39a775fc627fce";
+const pass = "9a9332d20bdb61b667b018415e4c5404";
 
 let customerData = [];
 
@@ -126,24 +126,26 @@ function renderLargeCard(apiData) {
   fullInfoCardElAirbnbUrl.append(airbnbUrl);
 
   // rendering buttons
+  // visited button
   visitedBtn = document.createElement("button");
   fullInfoCardEl.append(visitedBtn);
   visitedBtn.id = "visitedBtn";
   visitedBtn.type = "button";
-  visitedBtn.isInEdit = true;
-  visitedBtn.textContent = !visitedBtn.isInEdit
-    ? "SAVE"
-    : "Add to VISITED places";
-  console.log("visited btn", visitedBtn.isInEdit);
+  visitedBtn.setAttribute("data-action", "edit");
+  visitedBtn.textContent =
+    visitedBtn.dataset.action === "edit" ? "Add to VISITED places" : "SAVE";
 
   visitedBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    visitedBtn.isInEdit = !visitedBtn.isInEdit;
-    console.log(visitedBtn.isInEdit);
-    renderLargeCard(apiData);
+    console.log(e.target);
+    visitedBtn.dataset.action === "edit"
+      ? (visitedBtn.dataset.action = "save")
+      : (visitedBtn.dataset.action = "edit");
     visitedBtnClick();
+    renderLargeCard(apiData);
   });
 
+  // planned visits button
   plannedVisitBtn = document.createElement("button");
   fullInfoCardEl.append(plannedVisitBtn);
   plannedVisitBtn.id = "plannedVisitBtn";
@@ -156,7 +158,7 @@ function visitedBtnClick() {
   if (document.querySelector(".full-info-card")) {
     document.querySelector(".full-info-card").remove();
   }
-  let visitedInfoInputEl = document.createElement("div");
+  let visitedInfoInputEl = document.createElement("form");
   document.querySelector(".full-info-card").append(visitedInfoInputEl);
   visitedInfoInputEl.className = "visited-info-input-container";
 
