@@ -1,7 +1,14 @@
 const username = "d306aad952470a383d39a775fc627fce";
 const pass = "9a9332d20bdb61b667b018415e4c5404";
 
-let userVisitedData = [];
+const userVisitedData = [];
+const userWishData = [];
+const userVisitedLS = "userVisitedData";
+const userWishLS = "userWishData";
+
+function updateLocalStorage(itemName, arrayData) {
+  window.localStorage.setItem(itemName, JSON.stringify(arrayData));
+}
 
 async function loadApiSearchData(searchInput, searchBy) {
   try {
@@ -63,6 +70,11 @@ function searchBtn() {
   });
 }
 
+function closeLargeCard() {
+  document.querySelector(".full-info-card").remove();
+  document.querySelector("#app-container").style.filter = "none";
+}
+
 function renderLargeCard(apiData) {
   // RENDERING FULL CITY DATA CARD
   appContainerEl.style.filter = "blur(3px)";
@@ -80,8 +92,7 @@ function renderLargeCard(apiData) {
 
   closeBtnEl.addEventListener("click", (e) => {
     e.preventDefault();
-    fullInfoCardEl.remove();
-    appContainerEl.style.filter = "none";
+    closeLargeCard();
   });
 
   // render h1
@@ -136,21 +147,21 @@ function renderLargeCard(apiData) {
 
   visitedBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log(visitedBtn.dataset.action);
+    renderVisitedForm();
     if (visitedBtn.dataset.action === "edit") {
       visitedBtn.textContent = "SAVE";
       visitedBtn.dataset.action = "save";
     } else {
       visitedBtn.textContent = "Add to VISITED places";
       visitedBtn.dataset.action = "edit";
-      let visitedInputDateValue =
-        document.querySelector("#visitedDateInput").value;
-      let visitedInputRatingValue = document.querySelector(
-        "#visitedRatingInput"
-      ).value;
-      userVisitedData.push();
+      // push to list
+      let cityName = apiData["data"]["attributes"]["name"];
+      let cityId = apiData["data"]["id"];
+      saveToVisitedList(cityId, cityName);
+      // localStorage
+      updateLocalStorage(userVisitedLS, userVisitedData);
+      closeLargeCard();
     }
-    visitedBtnClick();
   });
 
   // planned visits button
@@ -162,7 +173,25 @@ function renderLargeCard(apiData) {
   // visitedBtn.isinEdit = false;
 }
 
-function visitedBtnClick() {
+function saveToVisitedList(cityId, cityName) {
+  let visitedInputDateValue = document.querySelector("#visitedDateInput").value;
+  let visitedInputRatingValue = document.querySelector(
+    "#visitedRatingInput"
+  ).value;
+  const newVisitedPlace = Object.assign(
+    {},
+    {
+      id: cityId,
+      city: cityName,
+      dateOfVisit: visitedInputDateValue,
+      visitRating: visitedInputRatingValue,
+    }
+  );
+  userVisitedData.push(newVisitedPlace);
+  console.log(userVisitedData);
+}
+
+function renderVisitedForm() {
   if (document.querySelector(".visited-info-input-container")) {
     document.querySelector(".visited-info-input-container").remove();
   }
@@ -177,14 +206,15 @@ function visitedBtnClick() {
 
   let dateInputLabel = document.createElement("label");
   dateInputDiv.append(dateInputLabel);
-  dateInputLabel.for = "visitedDateinput";
+  dateInputLabel.for = "visitedDate";
   dateInputLabel.textContent = "Enter date of visit: ";
 
   let dateInput = document.createElement("input");
   dateInputDiv.append(dateInput);
   dateInput.id = "visitedDateInput";
   dateInput.type = "date";
-  dateInput.name = "visitedDateInput";
+  dateInput.name = "visitedDate";
+  dateInput.value = new Date().toLocaleDateString("en-CA");
 
   let ratingInputDiv = document.createElement("div");
   visitedInfoInputEl.append(ratingInputDiv);
@@ -202,6 +232,7 @@ function visitedBtnClick() {
   ratingInput.name = "visitedRatingInput";
   ratingInput.min = 1;
   ratingInput.max = 10;
+  ratingInput.value = 5;
 }
 
 function renderSearchBar() {
