@@ -131,12 +131,13 @@ function renderLargeCard(apiData) {
   fullInfoCardEl.append(visitedBtn);
   visitedBtn.id = "visitedBtn";
   visitedBtn.type = "button";
-  visitedBtn.setAttribute("data-action", "edit");
+  // visitedBtn.setAttribute("data-action", "edit");
   visitedBtn.textContent =
     visitedBtn.dataset.action === "edit" ? "Add to VISITED places" : "SAVE";
 
   visitedBtn.addEventListener("click", (e) => {
     e.preventDefault();
+    visitedBtn.setAttribute("data-action", "edit");
     console.log(e.target);
     visitedBtn.dataset.action === "edit"
       ? (visitedBtn.dataset.action = "save")
