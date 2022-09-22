@@ -1,7 +1,7 @@
 const username = "d306aad952470a383d39a775fc627fce";
 const pass = "9a9332d20bdb61b667b018415e4c5404";
 
-let customerData = [];
+let userVisitedData = [];
 
 async function loadApiSearchData(searchInput, searchBy) {
   try {
@@ -131,19 +131,26 @@ function renderLargeCard(apiData) {
   fullInfoCardEl.append(visitedBtn);
   visitedBtn.id = "visitedBtn";
   visitedBtn.type = "button";
-  // visitedBtn.setAttribute("data-action", "edit");
-  visitedBtn.textContent =
-    visitedBtn.dataset.action === "edit" ? "Add to VISITED places" : "SAVE";
+  visitedBtn.setAttribute("data-action", "edit");
+  visitedBtn.textContent = "Add to VISITED places";
 
   visitedBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    visitedBtn.setAttribute("data-action", "edit");
-    console.log(e.target);
-    visitedBtn.dataset.action === "edit"
-      ? (visitedBtn.dataset.action = "save")
-      : (visitedBtn.dataset.action = "edit");
+    console.log(visitedBtn.dataset.action);
+    if (visitedBtn.dataset.action === "edit") {
+      visitedBtn.textContent = "SAVE";
+      visitedBtn.dataset.action = "save";
+    } else {
+      visitedBtn.textContent = "Add to VISITED places";
+      visitedBtn.dataset.action = "edit";
+      let visitedInputDateValue =
+        document.querySelector("#visitedDateInput").value;
+      let visitedInputRatingValue = document.querySelector(
+        "#visitedRatingInput"
+      ).value;
+      userVisitedData.push();
+    }
     visitedBtnClick();
-    renderLargeCard(apiData);
   });
 
   // planned visits button
@@ -156,9 +163,10 @@ function renderLargeCard(apiData) {
 }
 
 function visitedBtnClick() {
-  if (document.querySelector(".full-info-card")) {
-    document.querySelector(".full-info-card").remove();
+  if (document.querySelector(".visited-info-input-container")) {
+    document.querySelector(".visited-info-input-container").remove();
   }
+
   let visitedInfoInputEl = document.createElement("form");
   document.querySelector(".full-info-card").append(visitedInfoInputEl);
   visitedInfoInputEl.className = "visited-info-input-container";
