@@ -75,7 +75,50 @@ function closeLargeCard() {
   document.querySelector("#app-container").style.filter = "none";
 }
 
+function prepareApiCityData(apiCityData) {
+  const cityId = apiCityData["data"]["id"];
+  const cityName = apiCityData["data"]["attributes"]["long_name"];
+  const indexOfImage = apiCityData["included"].findIndex(
+    (el) => el.type === "photo"
+  );
+  const imageUrl =
+    apiCityData["included"][indexOfImage]["attributes"]["image"]["medium"];
+  const population = apiCityData["data"]["attributes"]["population"];
+  const rating = apiCityData["data"]["attributes"]["average_rating"];
+  const airbnbLink = apiCityData["data"]["attributes"]["airbnb_url"];
+  const checkIn = apiCityData["data"]["attributes"]["check_in_count"];
+
+  // Additional properties for visited/wish user lists
+  const dateOfVisit = null;
+  const visitRating = null;
+
+  return Object.assign(
+    {},
+    {
+      cityId,
+      cityName,
+      imageUrl,
+      population,
+      rating,
+      airbnbLink,
+      checkIn,
+      dateOfVisit,
+      visitRating,
+    }
+  );
+}
+
 function renderLargeCard(apiData) {
+  const cityId = apiData["cityId"];
+  const cityName = apiData["cityName"];
+  const imageUrl = apiData["imageUrl"];
+  const population = apiData["population"];
+  const rating = apiData["rating"];
+  const airbnbLink = apiData["airbnbLink"];
+  const checkIn = apiData["checkIn"];
+  const dateOfVisit = apiData["dateOfVisit"];
+  const visitRating = apiData["visitRating"];
+
   // RENDERING FULL CITY DATA CARD
   appContainerEl.style.filter = "blur(3px)";
 
@@ -84,6 +127,7 @@ function renderLargeCard(apiData) {
   document.body.append(fullInfoCardEl);
   fullInfoCardEl.className = "full-info-card";
 
+  // Close button
   let closeBtnEl = document.createElement("img");
   fullInfoCardEl.append(closeBtnEl);
   closeBtnEl.src = "./img/x-symbol.svg";
@@ -98,19 +142,12 @@ function renderLargeCard(apiData) {
   // render h1
   let fullInfoCardElH1 = document.createElement("h1");
   fullInfoCardEl.append(fullInfoCardElH1);
-  fullInfoCardElH1.textContent = `${apiData["data"]["attributes"]["long_name"]}`;
+  fullInfoCardElH1.textContent = cityName;
 
   // render image
   let fullInfoCardElImg = document.createElement("img");
   fullInfoCardEl.append(fullInfoCardElImg);
-  let indexOfImage = apiData["included"].findIndex((el) => el.type === "photo");
-  fullInfoCardElImg.src = `${apiData["included"][indexOfImage]["attributes"]["image"]["medium"]}`;
-
-  // render card data
-  let population = `${apiData["data"]["attributes"]["population"]}`;
-  let rating = `${apiData["data"]["attributes"]["average_rating"]}`;
-  let airbnbLink = `${apiData["data"]["attributes"]["airbnb_url"]}`;
-  let checkIn = `${apiData["data"]["attributes"]["check_in_count"]}`;
+  fullInfoCardElImg.src = imageUrl;
 
   // render population
   let fullInfoCardElPop = document.createElement("p");
@@ -136,6 +173,10 @@ function renderLargeCard(apiData) {
   airbnbUrl.textContent = "AirBnb!";
   fullInfoCardElAirbnbUrl.append(airbnbUrl);
 
+  // TODO: render date of visit
+
+  // TODO: render visited rating
+
   // rendering buttons
   // visited button
   visitedBtn = document.createElement("button");
@@ -155,16 +196,18 @@ function renderLargeCard(apiData) {
       visitedBtn.textContent = "Add to VISITED places";
       visitedBtn.dataset.action = "edit";
       // push to list
-      let cityName = apiData["data"]["attributes"]["name"];
-      let cityId = apiData["data"]["id"];
-      saveToVisitedList(cityId, cityName);
+      saveToVisitedList(apiData);
       // localStorage
       updateLocalStorage(userVisitedLS, userVisitedData);
+
+      // :TODO re-render visited list component
+
+      // Close modal
       closeLargeCard();
     }
   });
 
-  // planned visits button
+  // planned visits but
   plannedVisitBtn = document.createElement("button");
   fullInfoCardEl.append(plannedVisitBtn);
   plannedVisitBtn.id = "plannedVisitBtn";
@@ -173,22 +216,32 @@ function renderLargeCard(apiData) {
   // visitedBtn.isinEdit = false;
 }
 
-function saveToVisitedList(cityId, cityName) {
+function renderUserVisitData() {
+  userVisitedData.forEach((el) => {});
+
+  // let cardEl = document.createElement("div");
+  //   document.querySelector("#api-cards-container").append(cardEl);
+  //   cardEl.className = "city-card";
+  //   cardEl.id = el.id;
+  //   cardEl.textContent = el.name;
+  //   cardEl.addEventListener("click", (e) => {
+  //     e.preventDefault();
+  //     loadApiSearchData(cardEl.id, "byId").then((apiData) => {
+  //       renderLargeCard(apiData);
+  //     });
+}
+
+function saveToVisitedList(cityData) {
   let visitedInputDateValue = document.querySelector("#visitedDateInput").value;
   let visitedInputRatingValue = document.querySelector(
     "#visitedRatingInput"
   ).value;
-  const newVisitedPlace = Object.assign(
-    {},
-    {
-      id: cityId,
-      city: cityName,
-      dateOfVisit: visitedInputDateValue,
-      visitRating: visitedInputRatingValue,
-    }
-  );
+
+  const newVisitedPlace = cityData;
+  newVisitedPlace["dateOfVisit"] = visitedInputDateValue;
+  newVisitedPlace["visitRating"] = visitedInputRatingValue;
+
   userVisitedData.push(newVisitedPlace);
-  console.log(userVisitedData);
 }
 
 function renderVisitedForm() {
@@ -321,7 +374,8 @@ function renderCards(apiCityData) {
     cardEl.addEventListener("click", (e) => {
       e.preventDefault();
       loadApiSearchData(cardEl.id, "byId").then((apiData) => {
-        renderLargeCard(apiData);
+        const processedApiData = prepareApiCityData(apiData);
+        renderLargeCard(processedApiData);
       });
     });
   });
