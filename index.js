@@ -1,13 +1,20 @@
 const username = "d306aad952470a383d39a775fc627fce";
 const pass = "9a9332d20bdb61b667b018415e4c5404";
 
-const userVisitedData = [];
-const userWishData = [];
-const userVisitedLS = "userVisitedData";
-const userWishLS = "userWishData";
+let userVisitedData = [];
+let userWishData = [];
+let userVisitedLS = "userVisitedData";
+let userWishLS = "userWishData";
 
 function updateLocalStorage(itemName, arrayData) {
   window.localStorage.setItem(itemName, JSON.stringify(arrayData));
+}
+
+function getFromLocalStorage() {
+  let visitedDataLocalStorage = window.localStorage.getItem(userVisitedData);
+  if (visitedDataLocalStorage) {
+    userVisitedData = JSON.parse(visitedDataLocalStorage);
+  }
 }
 
 async function loadApiSearchData(searchInput, searchBy) {
@@ -50,6 +57,7 @@ async function loadApiSearchData(searchInput, searchBy) {
 
 document.addEventListener("DOMContentLoaded", function (e) {
   e.preventDefault();
+  getFromLocalStorage();
   renderApp();
 });
 
@@ -224,21 +232,6 @@ function renderLargeCard(apiData) {
   plannedVisitBtn.textContent = "Add to WISH list";
 }
 
-function renderUserVisitData() {
-  userVisitedData.forEach((el) => {});
-
-  // let cardEl = document.createElement("div");
-  //   document.querySelector("#api-cards-container").append(cardEl);
-  //   cardEl.className = "city-card";
-  //   cardEl.id = el.id;
-  //   cardEl.textContent = el.name;
-  //   cardEl.addEventListener("click", (e) => {
-  //     e.preventDefault();
-  //     loadApiSearchData(cardEl.id, "byId").then((apiData) => {
-  //       renderLargeCard(apiData);
-  //     });
-}
-
 function saveToVisitedList(cityData) {
   // getting user input values
   let visitedInputDateValue = document.querySelector("#visitedDateInput").value;
@@ -252,6 +245,10 @@ function saveToVisitedList(cityData) {
 
   // pushing new entry to the list
   userVisitedData.push(newVisitedPlace);
+  updateLocalStorage();
+
+  // render in list
+  renderCards(userVisitedData, "visited-list-container");
 }
 
 function renderVisitedForm() {
@@ -342,22 +339,41 @@ function renderUserLists() {
   listsContainerEl.id = "lists-container";
 
   // rendering visited cities list
-  let visitedListContainerEl = document.createElement("div");
-  listsContainerEl.append(visitedListContainerEl);
-  visitedListContainerEl.id = "visited-list-container";
-
-  let visitedListH1 = document.createElement("h1");
-  visitedListContainerEl.append(visitedListH1);
-  visitedListH1.textContent = "Visited Cities";
-
+  renderVisitedCitiesContainer();
   // rendering planned visit list
+  renderWishCitiesContainer();
+}
+
+function renderWishCitiesContainer() {
+  if (document.querySelector("#wish-list-container")) {
+    document.querySelector("#wish-list-container").remove();
+  }
+
   let wishListContainerEl = document.createElement("div");
-  listsContainerEl.append(wishListContainerEl);
+  document.querySelector("#lists-container").append(wishListContainerEl);
   wishListContainerEl.id = "wish-list-container";
 
   let wishListH1 = document.createElement("h1");
   wishListContainerEl.append(wishListH1);
-  wishListH1.textContent = "Planned Visits";
+  wishListH1.textContent = userWishData.length
+    ? "Planned Visits"
+    : "No Planned Visites";
+}
+
+function renderVisitedCitiesContainer() {
+  if (document.querySelector("#visited-list-container")) {
+    document.querySelector("#visited-list-container").remove();
+  }
+
+  let visitedListContainerEl = document.createElement("div");
+  document.querySelector("#lists-container").append(visitedListContainerEl);
+  visitedListContainerEl.id = "visited-list-container";
+
+  let visitedListH1 = document.createElement("h1");
+  visitedListContainerEl.append(visitedListH1);
+  visitedListH1.textContent = userVisitedData.length
+    ? "Visited Cities"
+    : "No Visits Yet";
 }
 
 function renderSearchResults(apiData) {
@@ -376,18 +392,25 @@ function renderSearchResults(apiData) {
   } else {
     let citiesDataFromApi =
       apiData["data"]["attributes"]["top_cities_and_towns"];
-    renderCards(citiesDataFromApi);
+    renderCards(citiesDataFromApi, "api-cards-container");
   }
 }
 
-function renderCards(apiCityData) {
+function renderCards(apiCityData, containerId) {
+  // figuring out which container to re-render
+  switch (containerId) {
+    case "visited-list-container":
+      renderVisitedCitiesContainer();
+    case "wish-list-container":
+      renderWishCitiesContainer();
+  }
   // generating cards for each city
   apiCityData.forEach((el) => {
     let cardEl = document.createElement("div");
-    document.querySelector("#api-cards-container").append(cardEl);
+    document.querySelector(`#${containerId}`).append(cardEl);
     cardEl.className = "city-card";
-    cardEl.id = el.id;
-    cardEl.textContent = el.name;
+    cardEl.id = el.cityId ? el.cityId : el.id;
+    cardEl.textContent = el.cityName ? el.cityName : el.name;
     cardEl.addEventListener("click", (e) => {
       e.preventDefault();
       loadApiSearchData(cardEl.id, "byId").then((apiData) => {
