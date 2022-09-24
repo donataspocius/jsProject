@@ -127,6 +127,12 @@ function renderLargeCard(apiData) {
   document.body.append(fullInfoCardEl);
   fullInfoCardEl.className = "full-info-card";
 
+  // Close button
+  let closeBtnEl = document.createElement("img");
+  fullInfoCardEl.append(closeBtnEl);
+  closeBtnEl.src = "./img/x-symbol.svg";
+  closeBtnEl.alt = "x button";
+  closeBtnEl.id = "closeBtn";
   // render h1
   let fullInfoCardElH1 = document.createElement("h1");
   fullInfoCardEl.append(fullInfoCardElH1);
@@ -166,17 +172,20 @@ function renderLargeCard(apiData) {
   // TODO: render visited rating
 
   // RENDERING BUTTONS
-  // Close button
-  let closeBtnEl = document.createElement("img");
-  fullInfoCardEl.append(closeBtnEl);
-  closeBtnEl.src = "./img/x-symbol.svg";
-  closeBtnEl.alt = "x button";
-  closeBtnEl.id = "closeBtn";
 
   closeBtnEl.addEventListener("click", (e) => {
     e.preventDefault();
     closeLargeCard();
   });
+
+  document.addEventListener("keyup", (e) => {
+    e.preventDefault();
+    console.log(e.key);
+    if (e.key === "Escape" && document.querySelector(".full-info-card")) {
+      closeLargeCard();
+    }
+  });
+
   // visited button
   visitedBtn = document.createElement("button");
   fullInfoCardEl.append(visitedBtn);
