@@ -11,10 +11,11 @@ function updateLocalStorage(itemName, arrayData) {
 }
 
 function getFromLocalStorage() {
-  let visitedDataLocalStorage = window.localStorage.getItem(userVisitedData);
-  if (visitedDataLocalStorage) {
+  let visitedDataLocalStorage = window.localStorage.getItem(userVisitedLS);
+  let wishDataLocalStorage = window.localStorage.getItem(userWishLS);
+  if (visitedDataLocalStorage)
     userVisitedData = JSON.parse(visitedDataLocalStorage);
-  }
+  if (wishDataLocalStorage) userWishData = JSON.parse(wishDataLocalStorage);
 }
 
 async function loadApiSearchData(searchInput, searchBy) {
@@ -84,7 +85,7 @@ function closeLargeCard() {
 }
 
 function prepareApiCityData(apiCityData) {
-  const cityId = apiCityData["data"]["id"];
+  const id = apiCityData["data"]["id"];
   const cityName = apiCityData["data"]["attributes"]["long_name"];
   const indexOfImage = apiCityData["included"].findIndex(
     (el) => el.type === "photo"
@@ -103,7 +104,7 @@ function prepareApiCityData(apiCityData) {
   return Object.assign(
     {},
     {
-      cityId,
+      id,
       cityName,
       imageUrl,
       population,
@@ -117,7 +118,7 @@ function prepareApiCityData(apiCityData) {
 }
 
 function renderLargeCard(apiData) {
-  const cityId = apiData["cityId"];
+  const id = apiData["id"];
   const cityName = apiData["cityName"];
   const imageUrl = apiData["imageUrl"];
   const population = apiData["population"];
@@ -216,13 +217,19 @@ function renderLargeCard(apiData) {
       saveToVisitedList(apiData);
       // update localStorage
       updateLocalStorage(userVisitedLS, userVisitedData);
-
-      // :TODO re-render visited list component
+      // render in list
+      renderCards(userVisitedData, "visited-list-container");
+      setColorForSearchCard(id, "blue");
 
       // Close modal
       closeLargeCard();
     }
   });
+
+  function setColorForSearchCard(id, color) {
+    document.querySelector(`#api-cards-container #cc-${id}`).style.borderColor =
+      color;
+  }
 
   // planned visits but
   plannedVisitBtn = document.createElement("button");
@@ -245,10 +252,7 @@ function saveToVisitedList(cityData) {
 
   // pushing new entry to the list
   userVisitedData.push(newVisitedPlace);
-  updateLocalStorage();
-
-  // render in list
-  renderCards(userVisitedData, "visited-list-container");
+  updateLocalStorage(userVisitedLS, userVisitedData);
 }
 
 function renderVisitedForm() {
@@ -340,8 +344,10 @@ function renderUserLists() {
 
   // rendering visited cities list
   renderVisitedCitiesContainer();
+  renderCards(userVisitedData, "visited-list-container");
   // rendering planned visit list
   renderWishCitiesContainer();
+  renderCards(userWishData, "wish-list-container");
 }
 
 function renderWishCitiesContainer() {
@@ -406,14 +412,37 @@ function renderCards(apiCityData, containerId) {
   }
   // generating cards for each city
   apiCityData.forEach((el) => {
+    // generating cards
     let cardEl = document.createElement("div");
     document.querySelector(`#${containerId}`).append(cardEl);
     cardEl.className = "city-card";
-    cardEl.id = el.cityId ? el.cityId : el.id;
+    cardEl.id = "cc-" + el.id;
     cardEl.textContent = el.cityName ? el.cityName : el.name;
+
+    // changing card colors by list
+    switch (containerId) {
+      case "visited-list-container": {
+        cardEl.style.borderColor = "blue";
+        break;
+      }
+      case "wish-list-container": {
+        cardEl.style.borderColor = "green";
+        break;
+      }
+      case "api-cards-container": {
+        if (userVisitedData.some((elem) => elem.id == el.id)) {
+          cardEl.style.borderColor = "blue";
+        } else if (userWishData.some((elem) => elem.id == el.id)) {
+          cardEl.style.borderColor = "green";
+        }
+        break;
+      }
+    }
+
+    // handling card click
     cardEl.addEventListener("click", (e) => {
       e.preventDefault();
-      loadApiSearchData(cardEl.id, "byId").then((apiData) => {
+      loadApiSearchData(el.id, "byId").then((apiData) => {
         const processedApiData = prepareApiCityData(apiData);
         renderLargeCard(processedApiData);
       });
