@@ -127,18 +127,6 @@ function renderLargeCard(apiData) {
   document.body.append(fullInfoCardEl);
   fullInfoCardEl.className = "full-info-card";
 
-  // Close button
-  let closeBtnEl = document.createElement("img");
-  fullInfoCardEl.append(closeBtnEl);
-  closeBtnEl.src = "./img/x-symbol.svg";
-  closeBtnEl.alt = "x button";
-  closeBtnEl.id = "closeBtn";
-
-  closeBtnEl.addEventListener("click", (e) => {
-    e.preventDefault();
-    closeLargeCard();
-  });
-
   // render h1
   let fullInfoCardElH1 = document.createElement("h1");
   fullInfoCardEl.append(fullInfoCardElH1);
@@ -177,7 +165,18 @@ function renderLargeCard(apiData) {
 
   // TODO: render visited rating
 
-  // rendering buttons
+  // RENDERING BUTTONS
+  // Close button
+  let closeBtnEl = document.createElement("img");
+  fullInfoCardEl.append(closeBtnEl);
+  closeBtnEl.src = "./img/x-symbol.svg";
+  closeBtnEl.alt = "x button";
+  closeBtnEl.id = "closeBtn";
+
+  closeBtnEl.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeLargeCard();
+  });
   // visited button
   visitedBtn = document.createElement("button");
   fullInfoCardEl.append(visitedBtn);
@@ -195,9 +194,10 @@ function renderLargeCard(apiData) {
     } else {
       visitedBtn.textContent = "Add to VISITED places";
       visitedBtn.dataset.action = "edit";
-      // push to list
+
+      // push to userVisitedData list
       saveToVisitedList(apiData);
-      // localStorage
+      // update localStorage
       updateLocalStorage(userVisitedLS, userVisitedData);
 
       // :TODO re-render visited list component
@@ -213,7 +213,6 @@ function renderLargeCard(apiData) {
   plannedVisitBtn.id = "plannedVisitBtn";
   plannedVisitBtn.type = "button";
   plannedVisitBtn.textContent = "Add to WISH list";
-  // visitedBtn.isinEdit = false;
 }
 
 function renderUserVisitData() {
@@ -232,6 +231,7 @@ function renderUserVisitData() {
 }
 
 function saveToVisitedList(cityData) {
+  // getting user input values
   let visitedInputDateValue = document.querySelector("#visitedDateInput").value;
   let visitedInputRatingValue = document.querySelector(
     "#visitedRatingInput"
@@ -241,6 +241,7 @@ function saveToVisitedList(cityData) {
   newVisitedPlace["dateOfVisit"] = visitedInputDateValue;
   newVisitedPlace["visitRating"] = visitedInputRatingValue;
 
+  // pushing new entry to the list
   userVisitedData.push(newVisitedPlace);
 }
 
@@ -248,11 +249,13 @@ function renderVisitedForm() {
   if (document.querySelector(".visited-info-input-container")) {
     document.querySelector(".visited-info-input-container").remove();
   }
+  // RENDERING INPUT FORM
 
   let visitedInfoInputEl = document.createElement("form");
   document.querySelector(".full-info-card").append(visitedInfoInputEl);
   visitedInfoInputEl.className = "visited-info-input-container";
 
+  // rendering date of visit input
   let dateInputDiv = document.createElement("div");
   visitedInfoInputEl.append(dateInputDiv);
   visitedInfoInputEl.classname = "visited-date-input";
@@ -269,6 +272,7 @@ function renderVisitedForm() {
   dateInput.name = "visitedDate";
   dateInput.value = new Date().toLocaleDateString("en-CA");
 
+  // rendering rating of visit input
   let ratingInputDiv = document.createElement("div");
   visitedInfoInputEl.append(ratingInputDiv);
   visitedInfoInputEl.classname = "visited-rating-input";
@@ -323,10 +327,12 @@ function renderUserInfoCard() {
 }
 
 function renderUserLists() {
+  // rendering main container
   let listsContainerEl = document.createElement("div");
   document.querySelector("#my-data-container").append(listsContainerEl);
   listsContainerEl.id = "lists-container";
 
+  // rendering visited cities list
   let visitedListContainerEl = document.createElement("div");
   listsContainerEl.append(visitedListContainerEl);
   visitedListContainerEl.id = "visited-list-container";
@@ -335,6 +341,7 @@ function renderUserLists() {
   visitedListContainerEl.append(visitedListH1);
   visitedListH1.textContent = "Visited Cities";
 
+  // rendering planned visit list
   let wishListContainerEl = document.createElement("div");
   listsContainerEl.append(wishListContainerEl);
   wishListContainerEl.id = "wish-list-container";
@@ -365,6 +372,7 @@ function renderSearchResults(apiData) {
 }
 
 function renderCards(apiCityData) {
+  // generating cards for each city
   apiCityData.forEach((el) => {
     let cardEl = document.createElement("div");
     document.querySelector("#api-cards-container").append(cardEl);
