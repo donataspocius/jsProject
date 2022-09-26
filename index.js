@@ -1,5 +1,5 @@
-const username = "d306aad952470a383d39a775fc627fce";
-const pass = "9a9332d20bdb61b667b018415e4c5404";
+const username = "f4bbd92dbd9d483de912eaf87088aec3";
+const pass = "b63f0614d25b51490896071ab9f5c097";
 
 let userVisitedData = [];
 let userWishData = [];
@@ -98,9 +98,9 @@ function prepareApiCityData(apiCityData) {
   const checkIn = apiCityData["data"]["attributes"]["check_in_count"];
 
   // Additional properties for visited/wish user lists
-  const dateOfVisit = null;
-  const visitRating = null;
-  const plannedVisitDate = null;
+  const dateOfVisit = null; /* city visited and date */
+  const visitRating = null; /* average of all visited places */
+  const plannedVisitDate = null; /* days left till next visit to {cityName} */
 
   return Object.assign(
     {},
@@ -209,14 +209,14 @@ function renderLargeCard(apiData) {
 
     visitedBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      renderVisitedForm();
       if (visitedBtn.dataset.action === "edit") {
         visitedBtn.textContent = "SAVE";
         visitedBtn.dataset.action = "save";
+        visitedBtn.style.backgroundColor = "yellow";
+        renderVisitedForm();
       } else {
         visitedBtn.textContent = "Add to VISITED places";
         visitedBtn.dataset.action = "edit";
-
         // push to userVisitedData list
         saveToVisitedList(apiData);
         // update localStorage
@@ -224,6 +224,7 @@ function renderLargeCard(apiData) {
         // render in list
         renderCards(userVisitedData, "visited-list-container");
         setColorForSearchCard(id, "blue");
+        renderUserInfoCard();
 
         // Close modal
         closeLargeCard();
@@ -240,10 +241,11 @@ function renderLargeCard(apiData) {
 
     plannedVisitBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      renderPlannedVisitForm();
       if (plannedVisitBtn.dataset.action === "edit") {
         plannedVisitBtn.textContent = "SAVE";
         plannedVisitBtn.dataset.action = "save";
+        plannedVisitBtn.style.backgroundColor = "yellow";
+        renderPlannedVisitForm();
       } else {
         plannedVisitBtn.textContent = "Add to WISH list";
         plannedVisitBtn.dataset.action = "edit";
@@ -255,6 +257,7 @@ function renderLargeCard(apiData) {
         // render in list
         renderCards(userWishData, "wish-list-container");
         setColorForSearchCard(id, "green");
+        renderUserInfoCard();
 
         // Close modal
         closeLargeCard();
@@ -273,6 +276,11 @@ function renderLargeCard(apiData) {
       fullInfoCardEl.append(fullInfocardVisitRating);
       fullInfocardVisitRating.className = "userDataText";
       fullInfocardVisitRating.textContent = `Your rating: ${visitRating}`;
+    } else if (plannedVisitDate) {
+      let plannedVisitDateEl = document.createElement("p");
+      fullInfoCardEl.append(plannedVisitDateEl);
+      plannedVisitDateEl.className = "userDataText";
+      plannedVisitDateEl.textContent = `Plan to visit: ${plannedVisitDate}`;
     }
   }
 }
@@ -411,12 +419,6 @@ function renderSearchBar() {
   searchBtnEl.textContent = "Search!";
 }
 
-function renderUserInfoCard() {
-  let myDataInfoCardEl = document.createElement("div");
-  document.querySelector("#my-data-container").append(myDataInfoCardEl);
-  myDataInfoCardEl.id = "my-data-info-card";
-}
-
 function renderUserLists() {
   // rendering main container
   let listsContainerEl = document.createElement("div");
@@ -444,7 +446,7 @@ function renderWishCitiesContainer() {
   wishListContainerEl.append(wishListH1);
   wishListH1.textContent = userWishData.length
     ? "Planned Visits"
-    : "No Planned Visites";
+    : "No Planned Visits";
 }
 
 function renderVisitedCitiesContainer() {
@@ -553,4 +555,50 @@ function renderUI() {
   renderUserInfoCard();
   renderUserLists();
   renderSearchBar();
+  // renderStatsUI();
+}
+
+// Additional properties for visited/wish user lists
+// const dateOfVisit = null; /* city visited and date */
+// const visitRating = null; /* average of all visited places */
+// const plannedVisitDate = null; /* days left till next visit to {cityName} */
+
+function statsDateOfVisits() {
+  if (userVisitedData.length) {
+    let latestDateOfVisit = userVisitedData.reduce((r, a) => {
+      return r.dateOfVisit > a.dateOfVisit ? r : a;
+    });
+    console.log("latest visit: ", latestDateOfVisit);
+    return `${latestDateOfVisit.cityName}, ${latestDateOfVisit.dateOfVisit}`;
+  }
+}
+
+function renderUserInfoCard() {
+  if (document.querySelector("#statsContainer")) {
+    document.querySelector("#statsContainer").remove();
+  }
+
+  let myDataInfoCardEl = document.createElement("div");
+  document.querySelector("#my-data-container").append(myDataInfoCardEl);
+  myDataInfoCardEl.id = "my-data-info-card";
+
+  let myDataStatsContainer = document.createElement("div");
+  myDataInfoCardEl.append(myDataStatsContainer);
+  myDataStatsContainer.id = "statsContainer";
+
+  let statsH1 = document.createElement("h1");
+  myDataStatsContainer.append(statsH1);
+  statsH1.textContent = "Statistics";
+
+  let statsDateOfVisit = document.createElement("p");
+  myDataStatsContainer.append(statsDateOfVisit);
+  statsDateOfVisit.textContent = `Last visit: ${statsDateOfVisits()}`;
+
+  let statsRating = document.createElement("p");
+  myDataStatsContainer.append(statsRating);
+  statsRating.textContent = "Average rating here";
+
+  let statsNextVisit = document.createElement("p");
+  myDataStatsContainer.append(statsNextVisit);
+  statsNextVisit.textContent = "Next visit here";
 }
