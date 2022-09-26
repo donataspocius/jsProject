@@ -309,7 +309,7 @@ function saveToVisitedList(cityData) {
 
   const newVisitedPlace = cityData;
   newVisitedPlace["dateOfVisit"] = visitedInputDateValue.value;
-  newVisitedPlace["visitRating"] = visitedInputRatingValue.value;
+  newVisitedPlace["visitRating"] = Number(visitedInputRatingValue.value);
 
   // pushing new entry to the list
   userVisitedData.push(newVisitedPlace);
@@ -552,6 +552,10 @@ function renderUI() {
   appContainerEl.append(myDataContainerEl);
   myDataContainerEl.id = "my-data-container";
 
+  let myDataInfoCardEl = document.createElement("div");
+  document.querySelector("#my-data-container").append(myDataInfoCardEl);
+  myDataInfoCardEl.id = "my-data-info-card";
+
   renderUserInfoCard();
   renderUserLists();
   renderSearchBar();
@@ -573,17 +577,20 @@ function statsDateOfVisits() {
   }
 }
 
+function calcAverageRating() {
+  const average =
+    userVisitedData.reduce((total, next) => total + next.visitRating, 0) /
+    userVisitedData.length;
+  return average.toFixed(2);
+}
+
 function renderUserInfoCard() {
   if (document.querySelector("#statsContainer")) {
     document.querySelector("#statsContainer").remove();
   }
 
-  let myDataInfoCardEl = document.createElement("div");
-  document.querySelector("#my-data-container").append(myDataInfoCardEl);
-  myDataInfoCardEl.id = "my-data-info-card";
-
   let myDataStatsContainer = document.createElement("div");
-  myDataInfoCardEl.append(myDataStatsContainer);
+  document.querySelector("#my-data-info-card").append(myDataStatsContainer);
   myDataStatsContainer.id = "statsContainer";
 
   let statsH1 = document.createElement("h1");
@@ -592,11 +599,15 @@ function renderUserInfoCard() {
 
   let statsDateOfVisit = document.createElement("p");
   myDataStatsContainer.append(statsDateOfVisit);
-  statsDateOfVisit.textContent = `Last visit: ${statsDateOfVisits()}`;
+  statsDateOfVisit.textContent = userVisitedData.length
+    ? `Last visit: ${statsDateOfVisits()}`
+    : "Last visit: n/a";
 
   let statsRating = document.createElement("p");
   myDataStatsContainer.append(statsRating);
-  statsRating.textContent = "Average rating here";
+  statsRating.textContent = userVisitedData.length
+    ? `Average rating: ${calcAverageRating()}`
+    : "Average rating: n/a";
 
   let statsNextVisit = document.createElement("p");
   myDataStatsContainer.append(statsNextVisit);
