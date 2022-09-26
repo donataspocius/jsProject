@@ -561,11 +561,6 @@ function renderUI() {
   renderSearchBar();
 }
 
-// Additional properties for visited/wish user lists
-// const dateOfVisit = null; /* city visited and date */
-// const visitRating = null; /* average of all visited places */
-// const plannedVisitDate = null; /* days left till next visit to {cityName} */
-
 function statsDateOfVisits() {
   if (userVisitedData.length) {
     let latestDateOfVisit = userVisitedData.reduce((r, a) => {
@@ -575,12 +570,6 @@ function statsDateOfVisits() {
     return `${latestDateOfVisit.cityName}, ${latestDateOfVisit.dateOfVisit}`;
   }
 }
-
-// const startDate  = '2020-01-01';
-// const endDate    = '2020-03-15';
-
-// const diffInMs   = new Date(endDate) - new Date(startDate)
-// const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
 function statsNextVisit() {
   let nextVisitDate;
