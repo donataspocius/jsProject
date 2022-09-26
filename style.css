@@ -75,3 +75,7 @@
   position: relative;
   cursor: pointer;
 }
+
+.userDataText {
+  color: rgb(167, 41, 199);
+}

@@ -128,9 +128,6 @@ function renderLargeCard(apiData) {
   const dateOfVisit = apiData["dateOfVisit"];
   const visitRating = apiData["visitRating"];
 
-  console.log(dateOfVisit);
-  console.log(apiData);
-
   // RENDERING FULL CITY DATA CARD
   appContainerEl.style.filter = "blur(3px)";
 
@@ -179,10 +176,7 @@ function renderLargeCard(apiData) {
   airbnbUrl.textContent = "AirBnb!";
   fullInfoCardElAirbnbUrl.append(airbnbUrl);
 
-  // TODO: render visited rating
-
-  // RENDERING BUTTONS
-
+  // rendering close button
   closeBtnEl.addEventListener("click", (e) => {
     e.preventDefault();
     closeLargeCard();
@@ -196,51 +190,87 @@ function renderLargeCard(apiData) {
     }
   });
 
-  // visited button
-  visitedBtn = document.createElement("button");
-  fullInfoCardEl.append(visitedBtn);
-  visitedBtn.id = "visitedBtn";
-  visitedBtn.type = "button";
-  visitedBtn.setAttribute("data-action", "edit");
-  visitedBtn.textContent = "Add to VISITED places";
+  // checking if card already added to any list (if yes, no need to render buttons)
+  let isInAnyList =
+    userVisitedData.some((el) => el.id === id) ||
+    userWishData.some((el) => el.id === id);
 
-  visitedBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    renderVisitedForm();
-    if (visitedBtn.dataset.action === "edit") {
-      visitedBtn.textContent = "SAVE";
-      visitedBtn.dataset.action = "save";
-    } else {
-      visitedBtn.textContent = "Add to VISITED places";
-      visitedBtn.dataset.action = "edit";
+  if (!isInAnyList) {
+    // visited button
+    visitedBtn = document.createElement("button");
+    fullInfoCardEl.append(visitedBtn);
+    visitedBtn.id = "visitedBtn";
+    visitedBtn.type = "button";
+    visitedBtn.setAttribute("data-action", "edit");
+    visitedBtn.textContent = "Add to VISITED places";
 
-      // push to userVisitedData list
-      saveToVisitedList(apiData);
-      // update localStorage
-      updateLocalStorage(userVisitedLS, userVisitedData);
-      // render in list
-      renderCards(userVisitedData, "visited-list-container");
-      setColorForSearchCard(id, "blue");
+    visitedBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      renderVisitedForm();
+      if (visitedBtn.dataset.action === "edit") {
+        visitedBtn.textContent = "SAVE";
+        visitedBtn.dataset.action = "save";
+      } else {
+        visitedBtn.textContent = "Add to VISITED places";
+        visitedBtn.dataset.action = "edit";
 
-      // Close modal
-      closeLargeCard();
+        // push to userVisitedData list
+        saveToVisitedList(apiData);
+        // update localStorage
+        updateLocalStorage(userVisitedLS, userVisitedData);
+        // render in list
+        renderCards(userVisitedData, "visited-list-container");
+        setColorForSearchCard(id, "blue");
+
+        // Close modal
+        closeLargeCard();
+      }
+    });
+
+    // planned visits button
+    plannedVisitBtn = document.createElement("button");
+    fullInfoCardEl.append(plannedVisitBtn);
+    plannedVisitBtn.id = "plannedVisitBtn";
+    plannedVisitBtn.type = "button";
+    plannedVisitBtn.textContent = "Add to WISH list";
+
+    plannedVisitBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      renderPlannedVisitForm();
+      if (plannedVisitBtn.dataset.action === "edit") {
+        plannedVisitBtn.textContent = "SAVE";
+        plannedVisitBtn.dataset.action = "save";
+      } else {
+        plannedVisitBtn.textContent = "Add to WISH list";
+        plannedVisitBtn.dataset.action = "edit";
+
+        // push to userVisitedData list
+        saveToVisitedList(apiData);
+        // update localStorage
+        updateLocalStorage(userVisitedLS, userVisitedData);
+        // render in list
+        renderCards(userVisitedData, "visited-list-container");
+        setColorForSearchCard(id, "blue");
+
+        // Close modal
+        closeLargeCard();
+      }
+    });
+  } else {
+    if (dateOfVisit && visitRating) {
+      // render date of visit
+      let fullInfocardDateOfVisit = document.createElement("p");
+      fullInfoCardEl.append(fullInfocardDateOfVisit);
+      fullInfocardDateOfVisit.className = "userDataText";
+      fullInfocardDateOfVisit.textContent = `Date of your last visit: ${dateOfVisit}`;
+
+      // render rating
+      let fullInfocardVisitRating = document.createElement("p");
+      fullInfoCardEl.append(fullInfocardVisitRating);
+      fullInfocardVisitRating.className = "userDataText";
+      fullInfocardVisitRating.textContent = `Your rating: ${visitRating}`;
     }
-  });
-
-  // planned visits but
-  plannedVisitBtn = document.createElement("button");
-  fullInfoCardEl.append(plannedVisitBtn);
-  plannedVisitBtn.id = "plannedVisitBtn";
-  plannedVisitBtn.type = "button";
-  plannedVisitBtn.textContent = "Add to WISH list";
-
-  // TODO: render date of visit
-  let fullInfocardDateOfVisit = document.createElement("p");
-  fullInfoCardEl.append(fullInfocardDateOfVisit);
-  fullInfocardDateOfVisit.className = "userDataText";
-  fullInfocardDateOfVisit.textContent = dateOfVisit
-    ? `Date of your last visit: ${dateOfVisit}`
-    : "Date of your last visit: Not visited yet";
+  }
 }
 
 function setColorForSearchCard(id, color) {
@@ -260,6 +290,34 @@ function saveToVisitedList(cityData) {
   // pushing new entry to the list
   userVisitedData.push(newVisitedPlace);
   updateLocalStorage(userVisitedLS, userVisitedData);
+}
+
+function renderPlannedVisitForm() {
+  if (document.querySelector(".planned-visit-input-container")) {
+    document.querySelector(".planned-visit-input-container").remove();
+  }
+
+  // rendering input form
+  let plannedVisitInputEl = document.createElement("form");
+  document.querySelector(".full-info-card").append(plannedVisitInputEl);
+  plannedVisitInputEl.className = "planned-visit-input-container";
+
+  // rendering date of planned visit input
+  let plannedVisitDateInputDiv = document.createElement("div");
+  plannedVisitInputEl.append(plannedVisitDateInputDiv);
+  plannedVisitDateInputDiv.classname = "planned-visit-date-input";
+
+  let plannedVisitDateInputLabel = document.createElement("label");
+  plannedVisitDateInputDiv.append(plannedVisitDateInputLabel);
+  plannedVisitDateInputLabel.for = "plannedVisitDate";
+  plannedVisitDateInputLabel.textContent = "Plan to visit: ";
+
+  let plannedVisitDateInput = document.createElement("input");
+  plannedVisitDateInputDiv.append(plannedVisitDateInput);
+  plannedVisitDateInput.id = "plannedVisitDateInput";
+  plannedVisitDateInput.type = "date";
+  plannedVisitDateInput.name = "plannedVisitDate";
+  plannedVisitDateInput.value = new Date().toLocaleDateString("en-CA");
 }
 
 function renderVisitedForm() {
@@ -461,7 +519,6 @@ function renderCards(apiCityData, containerId) {
           renderLargeCard(processedApiData);
         });
       } else {
-        console.log("el i6 ", el);
         renderLargeCard(el);
       }
     });
