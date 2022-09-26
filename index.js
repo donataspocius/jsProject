@@ -100,6 +100,7 @@ function prepareApiCityData(apiCityData) {
   // Additional properties for visited/wish user lists
   const dateOfVisit = null;
   const visitRating = null;
+  const plannedVisitDate = null;
 
   return Object.assign(
     {},
@@ -113,6 +114,7 @@ function prepareApiCityData(apiCityData) {
       checkIn,
       dateOfVisit,
       visitRating,
+      plannedVisitDate,
     }
   );
 }
@@ -127,6 +129,7 @@ function renderLargeCard(apiData) {
   const checkIn = apiData["checkIn"];
   const dateOfVisit = apiData["dateOfVisit"];
   const visitRating = apiData["visitRating"];
+  const plannedVisitDate = apiData["plannedVisit"];
 
   // RENDERING FULL CITY DATA CARD
   appContainerEl.style.filter = "blur(3px)";
@@ -232,6 +235,7 @@ function renderLargeCard(apiData) {
     fullInfoCardEl.append(plannedVisitBtn);
     plannedVisitBtn.id = "plannedVisitBtn";
     plannedVisitBtn.type = "button";
+    plannedVisitBtn.setAttribute("data-action", "edit");
     plannedVisitBtn.textContent = "Add to WISH list";
 
     plannedVisitBtn.addEventListener("click", (e) => {
@@ -245,12 +249,12 @@ function renderLargeCard(apiData) {
         plannedVisitBtn.dataset.action = "edit";
 
         // push to userVisitedData list
-        saveToVisitedList(apiData);
+        saveToWishList(apiData);
         // update localStorage
         updateLocalStorage(userVisitedLS, userVisitedData);
         // render in list
-        renderCards(userVisitedData, "visited-list-container");
-        setColorForSearchCard(id, "blue");
+        renderCards(userWishData, "wish-list-container");
+        setColorForSearchCard(id, "green");
 
         // Close modal
         closeLargeCard();
@@ -276,6 +280,18 @@ function renderLargeCard(apiData) {
 function setColorForSearchCard(id, color) {
   document.querySelector(`#api-cards-container #cc-${id}`).style.borderColor =
     color;
+}
+
+// idea for UPGRADE: make reusable save to wish/visited list
+
+function saveToWishList(cityData) {
+  let plannedVisitInputDate = document.querySelector("#plannedVisitDateInput");
+  const newWishPlace = cityData;
+  newWishPlace["plannedVisit"] = plannedVisitInputDate.value;
+
+  // pushing new entry to the wish list
+  userWishData.push(newWishPlace);
+  updateLocalStorage(userWishLS, userWishData);
 }
 
 function saveToVisitedList(cityData) {
