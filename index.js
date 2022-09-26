@@ -128,6 +128,9 @@ function renderLargeCard(apiData) {
   const dateOfVisit = apiData["dateOfVisit"];
   const visitRating = apiData["visitRating"];
 
+  console.log(dateOfVisit);
+  console.log(apiData);
+
   // RENDERING FULL CITY DATA CARD
   appContainerEl.style.filter = "blur(3px)";
 
@@ -175,8 +178,6 @@ function renderLargeCard(apiData) {
   airbnbUrl.href = `${airbnbLink}`;
   airbnbUrl.textContent = "AirBnb!";
   fullInfoCardElAirbnbUrl.append(airbnbUrl);
-
-  // TODO: render date of visit
 
   // TODO: render visited rating
 
@@ -226,29 +227,35 @@ function renderLargeCard(apiData) {
     }
   });
 
-  function setColorForSearchCard(id, color) {
-    document.querySelector(`#api-cards-container #cc-${id}`).style.borderColor =
-      color;
-  }
-
   // planned visits but
   plannedVisitBtn = document.createElement("button");
   fullInfoCardEl.append(plannedVisitBtn);
   plannedVisitBtn.id = "plannedVisitBtn";
   plannedVisitBtn.type = "button";
   plannedVisitBtn.textContent = "Add to WISH list";
+
+  // TODO: render date of visit
+  let fullInfocardDateOfVisit = document.createElement("p");
+  fullInfoCardEl.append(fullInfocardDateOfVisit);
+  fullInfocardDateOfVisit.className = "userDataText";
+  fullInfocardDateOfVisit.textContent = dateOfVisit
+    ? `Date of your last visit: ${dateOfVisit}`
+    : "Date of your last visit: Not visited yet";
+}
+
+function setColorForSearchCard(id, color) {
+  document.querySelector(`#api-cards-container #cc-${id}`).style.borderColor =
+    color;
 }
 
 function saveToVisitedList(cityData) {
   // getting user input values
-  let visitedInputDateValue = document.querySelector("#visitedDateInput").value;
-  let visitedInputRatingValue = document.querySelector(
-    "#visitedRatingInput"
-  ).value;
+  let visitedInputDateValue = document.querySelector("#visitedDateInput");
+  let visitedInputRatingValue = document.querySelector("#visitedRatingInput");
 
   const newVisitedPlace = cityData;
-  newVisitedPlace["dateOfVisit"] = visitedInputDateValue;
-  newVisitedPlace["visitRating"] = visitedInputRatingValue;
+  newVisitedPlace["dateOfVisit"] = visitedInputDateValue.value;
+  newVisitedPlace["visitRating"] = visitedInputRatingValue.value;
 
   // pushing new entry to the list
   userVisitedData.push(newVisitedPlace);
@@ -403,13 +410,19 @@ function renderSearchResults(apiData) {
 }
 
 function renderCards(apiCityData, containerId) {
+  let loadFromApi = false;
   // figuring out which container to re-render
   switch (containerId) {
     case "visited-list-container":
       renderVisitedCitiesContainer();
+      break;
     case "wish-list-container":
       renderWishCitiesContainer();
+      break;
+    default:
+      loadFromApi = true;
   }
+
   // generating cards for each city
   apiCityData.forEach((el) => {
     // generating cards
@@ -442,10 +455,15 @@ function renderCards(apiCityData, containerId) {
     // handling card click
     cardEl.addEventListener("click", (e) => {
       e.preventDefault();
-      loadApiSearchData(el.id, "byId").then((apiData) => {
-        const processedApiData = prepareApiCityData(apiData);
-        renderLargeCard(processedApiData);
-      });
+      if (loadFromApi) {
+        loadApiSearchData(el.id, "byId").then((apiData) => {
+          const processedApiData = prepareApiCityData(apiData);
+          renderLargeCard(processedApiData);
+        });
+      } else {
+        console.log("el i6 ", el);
+        renderLargeCard(el);
+      }
     });
   });
 }
