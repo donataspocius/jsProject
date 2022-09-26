@@ -129,7 +129,7 @@ function renderLargeCard(apiData) {
   const checkIn = apiData["checkIn"];
   const dateOfVisit = apiData["dateOfVisit"];
   const visitRating = apiData["visitRating"];
-  const plannedVisitDate = apiData["plannedVisit"];
+  const plannedVisitDate = apiData["plannedVisitDate"];
 
   // RENDERING FULL CITY DATA CARD
   appContainerEl.style.filter = "blur(3px)";
@@ -253,7 +253,7 @@ function renderLargeCard(apiData) {
         // push to userVisitedData list
         saveToWishList(apiData);
         // update localStorage
-        updateLocalStorage(userVisitedLS, userVisitedData);
+        updateLocalStorage(userWishLS, userWishData);
         // render in list
         renderCards(userWishData, "wish-list-container");
         setColorForSearchCard(id, "green");
@@ -295,7 +295,7 @@ function setColorForSearchCard(id, color) {
 function saveToWishList(cityData) {
   let plannedVisitInputDate = document.querySelector("#plannedVisitDateInput");
   const newWishPlace = cityData;
-  newWishPlace["plannedVisit"] = plannedVisitInputDate.value;
+  newWishPlace["plannedVisitDate"] = plannedVisitInputDate.value;
 
   // pushing new entry to the wish list
   userWishData.push(newWishPlace);
@@ -559,7 +559,6 @@ function renderUI() {
   renderUserInfoCard();
   renderUserLists();
   renderSearchBar();
-  // renderStatsUI();
 }
 
 // Additional properties for visited/wish user lists
@@ -574,6 +573,27 @@ function statsDateOfVisits() {
     });
     console.log("latest visit: ", latestDateOfVisit);
     return `${latestDateOfVisit.cityName}, ${latestDateOfVisit.dateOfVisit}`;
+  }
+}
+
+// const startDate  = '2020-01-01';
+// const endDate    = '2020-03-15';
+
+// const diffInMs   = new Date(endDate) - new Date(startDate)
+// const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+function statsNextVisit() {
+  let nextVisitDate;
+  console.log(userWishData, "user wish");
+  if (userWishData.length) {
+    nextVisitDate = userWishData.reduce((r, a) => {
+      return r.plannedVisitDate < a.plannedVisitDate ? r : a;
+    });
+    let diffInMs = new Date(nextVisitDate.plannedVisitDate) - new Date();
+    let diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    return `Next visit to ${nextVisitDate.cityName} in ${diffInDays.toFixed(
+      0
+    )} day(s)`;
   }
 }
 
@@ -609,7 +629,9 @@ function renderUserInfoCard() {
     ? `Average rating: ${calcAverageRating()}`
     : "Average rating: n/a";
 
-  let statsNextVisit = document.createElement("p");
-  myDataStatsContainer.append(statsNextVisit);
-  statsNextVisit.textContent = "Next visit here";
+  let statsNextVisitEl = document.createElement("p");
+  myDataStatsContainer.append(statsNextVisitEl);
+  statsNextVisitEl.textContent = userWishData.length
+    ? `${statsNextVisit()}`
+    : "n/a";
 }
