@@ -88,8 +88,8 @@ function prepareApiCityData(apiCityData) {
 
   const imageUrl =
     imgs.length > 1
-      ? imgs[1]["attributes"]["image"]["medium"]
-      : imgs[0]["attributes"]["image"]["medium"];
+      ? imgs[1]["attributes"]["image"]["large"]
+      : imgs[0]["attributes"]["image"]["large"];
 
   const population = apiCityData["data"]["attributes"]["population"];
   const rating = apiCityData["data"]["attributes"]["average_rating"];
@@ -159,6 +159,7 @@ function renderLargeCard(apiData) {
   let fullInfoCardElImg = document.createElement("img");
   fullInfoCardEl.append(fullInfoCardElImg);
   fullInfoCardElImg.src = imageUrl;
+  fullInfoCardElImg.className = "photo";
 
   let dataContainer = document.createElement("div");
   fullInfoCardEl.append(dataContainer);
