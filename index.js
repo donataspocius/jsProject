@@ -1,5 +1,5 @@
-const username = "f4bbd92dbd9d483de912eaf87088aec3";
-const pass = "b63f0614d25b51490896071ab9f5c097";
+const username = "fd9c36f8ad99c044e452fd38a59031f2";
+const pass = "17486622720c22029e92664fcc603b46";
 
 let userVisitedData = [];
 let userWishData = [];
@@ -187,6 +187,7 @@ function renderLargeCard(apiData) {
   let airbnbUrl = document.createElement("a");
   airbnbUrl.href = `${airbnbLink}`;
   airbnbUrl.textContent = "AirBnb!";
+  airbnbUrl.target = "_blank";
   fullInfoCardElAirbnbUrl.append(airbnbUrl);
 
   closeBtnEl.addEventListener("click", (e) => {

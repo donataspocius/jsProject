@@ -68,7 +68,7 @@
 
 .full-info-card {
   position: absolute;
-  min-width: 500px;
+  min-width: 400px;
   border: 5px solid orange;
   background-color: lightgoldenrodyellow;
   top: 10vh;
@@ -87,11 +87,12 @@
 
 .full-info-card h1 {
   padding-bottom: 10px;
+  padding-top: 10px;
   font-weight: 700;
 }
 
-.photo {
-  width: 500px;
+.full-info-card .photo {
+  width: 400px;
   margin-bottom: 10px;
 }
 
