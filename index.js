@@ -103,23 +103,20 @@ function prepareApiCityData(apiCityData) {
   const visitRating = null; /* average of all visited places */
   const plannedVisitDate = null; /* days left till next visit to {cityName} */
 
-  return Object.assign(
-    {},
-    {
-      id,
-      cityName,
-      imageUrl,
-      population,
-      rating,
-      airbnbLink,
-      checkIn,
-      lat,
-      long,
-      dateOfVisit,
-      visitRating,
-      plannedVisitDate,
-    }
-  );
+  return {
+    id,
+    cityName,
+    imageUrl,
+    population,
+    rating,
+    airbnbLink,
+    checkIn,
+    lat,
+    long,
+    dateOfVisit,
+    visitRating,
+    plannedVisitDate,
+  };
 }
 
 function renderLargeCard(apiData) {
@@ -372,6 +369,7 @@ function renderPlannedVisitForm() {
   plannedVisitDateInput.type = "date";
   plannedVisitDateInput.name = "plannedVisitDate";
   plannedVisitDateInput.value = new Date().toLocaleDateString("en-CA");
+  plannedVisitDateInput.min = new Date().toLocaleDateString("en-CA");
 }
 
 function renderVisitedForm() {
