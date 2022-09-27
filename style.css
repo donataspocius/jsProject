@@ -45,6 +45,7 @@
 }
 #search-input {
   width: 65%;
+  margin-right: 7px;
 }
 
 #api-cards-container {
@@ -74,6 +75,14 @@
   left: 40vh;
   filter: none;
   padding: 15px;
+}
+
+.full-info-card form {
+  margin-top: 10px;
+}
+
+.full-info-card button {
+  margin-right: 7px;
 }
 
 .full-info-card h1 {

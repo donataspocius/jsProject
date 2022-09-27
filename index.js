@@ -342,7 +342,11 @@ function renderPlannedVisitForm() {
   }
 
   if (document.querySelector(".visited-info-input-container")) {
+    let visitedBtn = document.querySelector("#visitedBtn");
     document.querySelector(".visited-info-input-container").remove();
+    visitedBtn.setAttribute("data-action", "edit");
+    visitedBtn.textContent = "Add to VISITED places";
+    visitedBtn.style.backgroundColor = "";
   }
 
   // rendering input form
@@ -374,7 +378,11 @@ function renderVisitedForm() {
   }
 
   if (document.querySelector(".planned-visit-input-container")) {
+    let plannedVisitBtn = document.querySelector("#plannedVisitBtn");
     document.querySelector(".planned-visit-input-container").remove();
+    plannedVisitBtn.setAttribute("data-action", "edit");
+    plannedVisitBtn.textContent = "Add to WISH list";
+    plannedVisitBtn.style.backgroundColor = "";
   }
   // RENDERING INPUT FORM
 
