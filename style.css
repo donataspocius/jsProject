@@ -81,5 +81,6 @@
 }
 
 #map {
-  height: 180px;
+  height: 300px;
+  margin-top: 15px;
 }

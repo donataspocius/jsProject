@@ -82,14 +82,15 @@ function closeLargeCard() {
 }
 
 function prepareApiCityData(apiCityData) {
-  console.log("api data city for coords: ", apiCityData);
   const id = apiCityData["data"]["id"];
   const cityName = apiCityData["data"]["attributes"]["long_name"];
-  const indexOfImage = apiCityData["included"].findIndex(
-    (el) => el.type === "photo"
-  );
+  const imgs = apiCityData["included"].filter((el) => el.type === "photo");
+
   const imageUrl =
-    apiCityData["included"][indexOfImage]["attributes"]["image"]["medium"];
+    imgs.length > 1
+      ? imgs[1]["attributes"]["image"]["medium"]
+      : imgs[0]["attributes"]["image"]["medium"];
+
   const population = apiCityData["data"]["attributes"]["population"];
   const rating = apiCityData["data"]["attributes"]["average_rating"];
   const airbnbLink = apiCityData["data"]["attributes"]["airbnb_url"];
@@ -159,31 +160,34 @@ function renderLargeCard(apiData) {
   fullInfoCardEl.append(fullInfoCardElImg);
   fullInfoCardElImg.src = imageUrl;
 
+  let dataContainer = document.createElement("div");
+  fullInfoCardEl.append(dataContainer);
+  dataContainer.id = "data-container";
+
   // render population
   let fullInfoCardElPop = document.createElement("p");
-  fullInfoCardEl.append(fullInfoCardElPop);
+  dataContainer.append(fullInfoCardElPop);
   fullInfoCardElPop.textContent = `Population: ${population}`;
 
   // render rating
   let fullInfoCardElRating = document.createElement("p");
-  fullInfoCardEl.append(fullInfoCardElRating);
+  dataContainer.append(fullInfoCardElRating);
   fullInfoCardElRating.textContent = `Rating: ${rating}`;
 
   // render check-in count
   let fullInfoCardElCheck = document.createElement("p");
-  fullInfoCardEl.append(fullInfoCardElCheck);
+  dataContainer.append(fullInfoCardElCheck);
   fullInfoCardElCheck.textContent = `Check-in count: ${checkIn}`;
 
   // render AirBnb link
   let fullInfoCardElAirbnbUrl = document.createElement("p");
   fullInfoCardElAirbnbUrl.textContent = "Check it out on ";
-  fullInfoCardEl.append(fullInfoCardElAirbnbUrl);
+  dataContainer.append(fullInfoCardElAirbnbUrl);
   let airbnbUrl = document.createElement("a");
   airbnbUrl.href = `${airbnbLink}`;
   airbnbUrl.textContent = "AirBnb!";
   fullInfoCardElAirbnbUrl.append(airbnbUrl);
 
-  // rendering close button
   closeBtnEl.addEventListener("click", (e) => {
     e.preventDefault();
     closeLargeCard();
@@ -204,7 +208,7 @@ function renderLargeCard(apiData) {
   if (!isInAnyList) {
     // visited button
     visitedBtn = document.createElement("button");
-    fullInfoCardEl.append(visitedBtn);
+    dataContainer.append(visitedBtn);
     visitedBtn.id = "visitedBtn";
     visitedBtn.type = "button";
     visitedBtn.setAttribute("data-action", "edit");
@@ -236,7 +240,7 @@ function renderLargeCard(apiData) {
 
     // planned visits button
     plannedVisitBtn = document.createElement("button");
-    fullInfoCardEl.append(plannedVisitBtn);
+    dataContainer.append(plannedVisitBtn);
     plannedVisitBtn.id = "plannedVisitBtn";
     plannedVisitBtn.type = "button";
     plannedVisitBtn.setAttribute("data-action", "edit");
@@ -270,18 +274,18 @@ function renderLargeCard(apiData) {
     if (dateOfVisit && visitRating) {
       // render date of visit
       let fullInfocardDateOfVisit = document.createElement("p");
-      fullInfoCardEl.append(fullInfocardDateOfVisit);
+      dataContainer.append(fullInfocardDateOfVisit);
       fullInfocardDateOfVisit.className = "userDataText";
       fullInfocardDateOfVisit.textContent = `Date of your last visit: ${dateOfVisit}`;
 
       // render rating
       let fullInfocardVisitRating = document.createElement("p");
-      fullInfoCardEl.append(fullInfocardVisitRating);
+      dataContainer.append(fullInfocardVisitRating);
       fullInfocardVisitRating.className = "userDataText";
       fullInfocardVisitRating.textContent = `Your rating: ${visitRating}`;
     } else if (plannedVisitDate) {
       let plannedVisitDateEl = document.createElement("p");
-      fullInfoCardEl.append(plannedVisitDateEl);
+      dataContainer.append(plannedVisitDateEl);
       plannedVisitDateEl.className = "userDataText";
       plannedVisitDateEl.textContent = `Plan to visit: ${plannedVisitDate}`;
     }
@@ -307,8 +311,6 @@ function setColorForSearchCard(id, color) {
   document.querySelector(`#api-cards-container #cc-${id}`).style.borderColor =
     color;
 }
-
-// idea for UPGRADE: make reusable save to wish/visited list
 
 function saveToWishList(cityData) {
   let plannedVisitInputDate = document.querySelector("#plannedVisitDateInput");
@@ -341,7 +343,7 @@ function renderPlannedVisitForm() {
 
   // rendering input form
   let plannedVisitInputEl = document.createElement("form");
-  document.querySelector(".full-info-card").append(plannedVisitInputEl);
+  document.querySelector("#data-container").append(plannedVisitInputEl);
   plannedVisitInputEl.className = "planned-visit-input-container";
 
   // rendering date of planned visit input
@@ -369,7 +371,7 @@ function renderVisitedForm() {
   // RENDERING INPUT FORM
 
   let visitedInfoInputEl = document.createElement("form");
-  document.querySelector(".full-info-card").append(visitedInfoInputEl);
+  document.querySelector("#data-container").append(visitedInfoInputEl);
   visitedInfoInputEl.className = "visited-info-input-container";
 
   // rendering date of visit input
