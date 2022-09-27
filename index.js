@@ -172,7 +172,7 @@ function renderLargeCard(apiData) {
   // render rating
   let fullInfoCardElRating = document.createElement("p");
   dataContainer.append(fullInfoCardElRating);
-  fullInfoCardElRating.textContent = `Rating: ${rating}`;
+  fullInfoCardElRating.textContent = `Rating: ${rating.toFixed(2)}`;
 
   // render check-in count
   let fullInfoCardElCheck = document.createElement("p");
@@ -229,7 +229,7 @@ function renderLargeCard(apiData) {
         // update localStorage
         updateLocalStorage(userVisitedLS, userVisitedData);
         // render in list
-        renderCards(userVisitedData, "visited-list-container");
+        renderCards(userVisitedData, "visited-list-cards-container");
         setColorForSearchCard(id, "blue");
         renderUserInfoCard();
 
@@ -262,7 +262,7 @@ function renderLargeCard(apiData) {
         // update localStorage
         updateLocalStorage(userWishLS, userWishData);
         // render in list
-        renderCards(userWishData, "wish-list-container");
+        renderCards(userWishData, "wish-list-cards-container");
         setColorForSearchCard(id, "green");
         renderUserInfoCard();
 
@@ -341,6 +341,10 @@ function renderPlannedVisitForm() {
     document.querySelector(".planned-visit-input-container").remove();
   }
 
+  if (document.querySelector(".visited-info-input-container")) {
+    document.querySelector(".visited-info-input-container").remove();
+  }
+
   // rendering input form
   let plannedVisitInputEl = document.createElement("form");
   document.querySelector("#data-container").append(plannedVisitInputEl);
@@ -367,6 +371,10 @@ function renderPlannedVisitForm() {
 function renderVisitedForm() {
   if (document.querySelector(".visited-info-input-container")) {
     document.querySelector(".visited-info-input-container").remove();
+  }
+
+  if (document.querySelector(".planned-visit-input-container")) {
+    document.querySelector(".planned-visit-input-container").remove();
   }
   // RENDERING INPUT FORM
 
@@ -430,7 +438,7 @@ function renderSearchBar() {
   apiSearchBarEl.append(searchInputEl);
   searchInputEl.id = "search-input";
   searchInputEl.type = "text";
-  searchInputEl.placeholder = "City or Country Name";
+  searchInputEl.placeholder = "Enter Country Name";
 
   let searchBtnEl = document.createElement("button");
   apiSearchBarEl.append(searchBtnEl);
@@ -445,44 +453,52 @@ function renderUserLists() {
   document.querySelector("#my-data-container").append(listsContainerEl);
   listsContainerEl.id = "lists-container";
 
-  // rendering visited cities list
-  renderVisitedCitiesContainer();
-  renderCards(userVisitedData, "visited-list-container");
-  // rendering planned visit list
-  renderWishCitiesContainer();
-  renderCards(userWishData, "wish-list-container");
-}
-
-function renderWishCitiesContainer() {
-  if (document.querySelector("#wish-list-container")) {
-    document.querySelector("#wish-list-container").remove();
-  }
+  let visitedListContainerEl = document.createElement("div");
+  listsContainerEl.append(visitedListContainerEl);
+  visitedListContainerEl.id = "visited-list-container";
 
   let wishListContainerEl = document.createElement("div");
-  document.querySelector("#lists-container").append(wishListContainerEl);
+  listsContainerEl.append(wishListContainerEl);
   wishListContainerEl.id = "wish-list-container";
 
-  let wishListH1 = document.createElement("h1");
-  wishListContainerEl.append(wishListH1);
-  wishListH1.textContent = userWishData.length
-    ? "Planned Visits"
-    : "No Planned Visits";
+  // rendering visited cities list
+  renderVisitedCitiesContainer();
+  renderCards(userVisitedData, "visited-list-cards-container");
+  // rendering planned visit list
+  renderWishCitiesContainer();
+  renderCards(userWishData, "wish-list-cards-container");
 }
 
 function renderVisitedCitiesContainer() {
-  if (document.querySelector("#visited-list-container")) {
-    document.querySelector("#visited-list-container").remove();
+  if (document.querySelector("#visited-list-cards-container")) {
+    document.querySelector("#visited-list-cards-container").remove();
   }
 
-  let visitedListContainerEl = document.createElement("div");
-  document.querySelector("#lists-container").append(visitedListContainerEl);
-  visitedListContainerEl.id = "visited-list-container";
+  let visitedListCardsEl = document.createElement("div");
+  document.querySelector("#visited-list-container").append(visitedListCardsEl);
+  visitedListCardsEl.id = "visited-list-cards-container";
 
   let visitedListH1 = document.createElement("h1");
-  visitedListContainerEl.append(visitedListH1);
+  visitedListCardsEl.append(visitedListH1);
   visitedListH1.textContent = userVisitedData.length
     ? "Visited Cities"
     : "No Visits Yet";
+}
+
+function renderWishCitiesContainer() {
+  if (document.querySelector("#wish-list-cards-container")) {
+    document.querySelector("#wish-list-cards-container").remove();
+  }
+
+  let wishListCardsEl = document.createElement("div");
+  document.querySelector("#wish-list-container").append(wishListCardsEl);
+  wishListCardsEl.id = "wish-list-cards-container";
+
+  let wishListH1 = document.createElement("h1");
+  wishListCardsEl.append(wishListH1);
+  wishListH1.textContent = userWishData.length
+    ? "Planned Visits"
+    : "No Planned Visits";
 }
 
 function renderSearchResults(apiData) {
@@ -509,10 +525,10 @@ function renderCards(apiCityData, containerId) {
   let loadFromApi = false;
   // figuring out which container to re-render
   switch (containerId) {
-    case "visited-list-container":
+    case "visited-list-cards-container":
       renderVisitedCitiesContainer();
       break;
-    case "wish-list-container":
+    case "wish-list-cards-container":
       renderWishCitiesContainer();
       break;
     default:
@@ -530,11 +546,11 @@ function renderCards(apiCityData, containerId) {
 
     // changing card colors by list
     switch (containerId) {
-      case "visited-list-container": {
+      case "visited-list-cards-container": {
         cardEl.style.borderColor = "blue";
         break;
       }
-      case "wish-list-container": {
+      case "wish-list-cards-container": {
         cardEl.style.borderColor = "green";
         break;
       }

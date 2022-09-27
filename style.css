@@ -24,6 +24,11 @@
   margin-top: 15px;
 }
 
+#lists-container h1 {
+  text-align: center;
+  font-weight: 700;
+}
+
 #visited-list-container {
   border: 5px solid blue;
   margin-right: 2px;
@@ -53,10 +58,11 @@
   border: 5px solid black;
   margin: 5px;
   cursor: pointer;
+  padding: 3px;
 }
 
 .city-card:hover {
-  background-color: rgb(150, 117, 77);
+  background-color: rgb(233, 191, 139);
 }
 
 .full-info-card {
@@ -70,6 +76,11 @@
   padding: 15px;
 }
 
+.full-info-card h1 {
+  padding-bottom: 10px;
+  font-weight: 700;
+}
+
 #closeBtn {
   height: 30px;
   position: relative;
@@ -77,10 +88,28 @@
 }
 
 .userDataText {
-  color: rgb(167, 41, 199);
+  color: rgb(255 21 24);
 }
 
 #map {
   height: 300px;
   margin-top: 15px;
+}
+
+#statsContainer {
+  padding: 5px;
+}
+
+#statsContainer p {
+  margin-top: 7px;
+}
+
+#statsContainer h1 {
+  font-weight: 700;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+#data-container p {
+  padding-bottom: 7px;
 }
