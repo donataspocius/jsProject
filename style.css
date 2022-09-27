@@ -79,3 +79,7 @@
 .userDataText {
   color: rgb(167, 41, 199);
 }
+
+#map {
+  height: 180px;
+}

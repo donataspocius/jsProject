@@ -49,11 +49,8 @@ async function loadApiSearchData(searchInput, searchBy) {
     }
 
     let apiData = await response.json();
-    console.log(apiData);
     return apiData;
-  } catch (err) {
-    console.log("fetch error: ", err);
-  }
+  } catch (err) {}
 }
 
 document.addEventListener("DOMContentLoaded", function (e) {
@@ -85,6 +82,7 @@ function closeLargeCard() {
 }
 
 function prepareApiCityData(apiCityData) {
+  console.log("api data city for coords: ", apiCityData);
   const id = apiCityData["data"]["id"];
   const cityName = apiCityData["data"]["attributes"]["long_name"];
   const indexOfImage = apiCityData["included"].findIndex(
@@ -96,6 +94,8 @@ function prepareApiCityData(apiCityData) {
   const rating = apiCityData["data"]["attributes"]["average_rating"];
   const airbnbLink = apiCityData["data"]["attributes"]["airbnb_url"];
   const checkIn = apiCityData["data"]["attributes"]["check_in_count"];
+  const lat = apiCityData["data"]["attributes"]["latitude"];
+  const long = apiCityData["data"]["attributes"]["longitude"];
 
   // Additional properties for visited/wish user lists
   const dateOfVisit = null; /* city visited and date */
@@ -112,6 +112,8 @@ function prepareApiCityData(apiCityData) {
       rating,
       airbnbLink,
       checkIn,
+      lat,
+      long,
       dateOfVisit,
       visitRating,
       plannedVisitDate,
@@ -130,6 +132,8 @@ function renderLargeCard(apiData) {
   const dateOfVisit = apiData["dateOfVisit"];
   const visitRating = apiData["visitRating"];
   const plannedVisitDate = apiData["plannedVisitDate"];
+  const lat = apiData["lat"];
+  const long = apiData["long"];
 
   // RENDERING FULL CITY DATA CARD
   appContainerEl.style.filter = "blur(3px)";
@@ -187,7 +191,6 @@ function renderLargeCard(apiData) {
 
   document.addEventListener("keyup", (e) => {
     e.preventDefault();
-    console.log(e.key);
     if (e.key === "Escape" && document.querySelector(".full-info-card")) {
       closeLargeCard();
     }
@@ -283,6 +286,21 @@ function renderLargeCard(apiData) {
       plannedVisitDateEl.textContent = `Plan to visit: ${plannedVisitDate}`;
     }
   }
+
+  let leafetMapEl = document.createElement("div");
+  fullInfoCardEl.append(leafetMapEl);
+  leafetMapEl.id = "map";
+
+  generateMap(lat, long);
+}
+
+function generateMap(lat, long) {
+  let map = L.map("map").setView([lat, long], 9);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap",
+  }).addTo(map);
+  let marker = L.marker([lat, long]).addTo(map);
 }
 
 function setColorForSearchCard(id, color) {
@@ -566,14 +584,12 @@ function statsDateOfVisits() {
     let latestDateOfVisit = userVisitedData.reduce((r, a) => {
       return r.dateOfVisit > a.dateOfVisit ? r : a;
     });
-    console.log("latest visit: ", latestDateOfVisit);
     return `${latestDateOfVisit.cityName}, ${latestDateOfVisit.dateOfVisit}`;
   }
 }
 
 function statsNextVisit() {
   let nextVisitDate;
-  console.log(userWishData, "user wish");
   if (userWishData.length) {
     nextVisitDate = userWishData.reduce((r, a) => {
       return r.plannedVisitDate < a.plannedVisitDate ? r : a;
@@ -604,7 +620,7 @@ function renderUserInfoCard() {
 
   let statsH1 = document.createElement("h1");
   myDataStatsContainer.append(statsH1);
-  statsH1.textContent = "Statistics";
+  statsH1.textContent = "User Statistics";
 
   let statsDateOfVisit = document.createElement("p");
   myDataStatsContainer.append(statsDateOfVisit);
@@ -615,8 +631,8 @@ function renderUserInfoCard() {
   let statsRating = document.createElement("p");
   myDataStatsContainer.append(statsRating);
   statsRating.textContent = userVisitedData.length
-    ? `Average rating: ${calcAverageRating()}`
-    : "Average rating: n/a";
+    ? `User average rating: ${calcAverageRating()}`
+    : "User average rating: n/a";
 
   let statsNextVisitEl = document.createElement("p");
   myDataStatsContainer.append(statsNextVisitEl);
